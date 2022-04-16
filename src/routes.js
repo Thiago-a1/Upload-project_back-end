@@ -13,7 +13,14 @@ routes.get('/posts', async (req, res) => {
 });
 
 routes.post('/posts', multer(multerConfig).single('file'), async (req, res) => {
-  const { originalname: name, size, key, location: url = '' } = req.file;
+
+  if (process.env.STORAGE_TYPE === 'firebaseStorage') {
+    var { originalname: name, publicUrl: url = '' } = req.file;
+
+    var { name: key, size } = req.file.fileRef.metadata;
+  } else {
+    var { originalname: name, size, key, location: url = '' } = req.file;
+  }
 
   const post = await Post.create({
     name,
@@ -21,7 +28,7 @@ routes.post('/posts', multer(multerConfig).single('file'), async (req, res) => {
     key,
     url, 
   })
-  
+
   return res.json(post);
 });
 

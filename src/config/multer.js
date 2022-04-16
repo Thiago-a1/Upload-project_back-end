@@ -2,7 +2,9 @@ const multer = require('multer');
 const path = require('path');
 const crypto = require('crypto');
 const aws = require('aws-sdk');
+
 const multerS3 = require('multer-s3');
+const FirebaseStorage = require('multer-firebase-storage');
 
 const storageTypes = {
   local: multer.diskStorage({
@@ -18,6 +20,16 @@ const storageTypes = {
         cb(null, file.key);
       });
     },
+  }),
+  firebaseStorage: FirebaseStorage({
+    bucketName: process.env.FIREBASE_STORAGE_BUCKET,
+    credentials: {
+      clientEmail: process.env.FIREBASE_STORAGE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_STORAGE_PRIVATE_KEY,
+      projectId: process.env.FIREBASE_STORAGE_PROJECT_ID
+    },
+    public: true,
+    namePrefix: `${crypto.randomBytes(16).toString('hex')}-`,
   }),
   s3: multerS3({
     s3: new aws.S3(),
