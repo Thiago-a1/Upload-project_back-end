@@ -27,5 +27,5 @@ app.use('/files', express.static(path.resolve(__dirname, '..', 'temp', 'uploads'
 
 app.use(require("./routes"));
 
-app.listen(5000);
+app.listen(process.env.PORT || 5000);
 
